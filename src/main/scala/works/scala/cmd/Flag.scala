@@ -40,9 +40,9 @@ trait Flag[F]:
     */
   def parseArgument: PartialFunction[String, F]
 
-  /** Indicates this Flag expects an argument. Defaults to false.
+  /** Indicates this Flag expects an argument. Defaults to true.
     */
-  private val hasArgument: Boolean = false
+  val hasArgument: Boolean = true
 
   /** Hyphenated shortKey used for parsing
     */
@@ -77,7 +77,7 @@ trait Flag[F]:
     */
   final def parseFirstFlagArg(args: Array[String]): Option[F] =
     args
-      .dropWhile(a => a != _sk || a != _lk)
+      .dropWhile(a => !(a == _sk || a == _lk))
       .drop(1)
       .headOption
       .map(parseArgument)
@@ -100,15 +100,18 @@ trait Flag[F]:
     loop(args, Seq.empty)
 
   @tailrec
-  final private def stripFlagAgs(
+  final private def stripFlagArgs(
       args: Array[String],
       accum: Array[String],
   ): Array[String] =
     args.toList match
-      case Nil                            => accum
-      case _ :: Nil                       => accum
-      case f :: _ if f == _sk || f == _lk => stripFlagAgs(args.drop(2), accum)
-      case f :: _                         => stripFlagAgs(args.drop(1), accum :+ f)
+      case Nil                            =>
+        accum
+      case f :: _ if f == _sk || f == _lk =>
+        if hasArgument then stripFlagArgs(args.drop(2), accum)
+        else stripFlagArgs(args.drop(1), accum)
+      case f :: _                         =>
+        stripFlagArgs(args.drop(1), accum :+ f)
 
   /** A method to remove the flag trigger, and any arguments, from the input
     * args, so that positional Args can then be processed
@@ -118,7 +121,7 @@ trait Flag[F]:
     * @return
     */
   final def stripArgs(args: Array[String]): Array[String] =
-    if hasArgument then stripFlagAgs(args, Array.empty)
+    if hasArgument then stripFlagArgs(args, Array.empty)
     else args.filterNot(a => a == _sk || a == _lk)
 
 object Flag:
@@ -133,8 +136,7 @@ object Flag:
     val flagTriggers: Seq[String] = flags.flatMap(f => Seq(f._sk, f._lk))
     args
       .filter(_.startsWith("-"))
-      .map(f => flagTriggers.contains(f))
-      .foldLeft(true)(_ || _)
+      .exists(t => !flagTriggers.contains(t))
 
   /** Strip the given flags from the given arguments.
     *
@@ -154,9 +156,12 @@ object Flag:
 trait UnitFlag extends Flag[Unit]:
   override def parseArgument: PartialFunction[String, Unit] = _ => ()
 
+trait BooleanFlag extends UnitFlag:
+  override val hasArgument: Boolean = false
+
 /** A default Help flag, automatically provided to apps.
   */
-case object HelpFlag extends UnitFlag:
+case object HelpFlag extends BooleanFlag:
   override val name: String        = "help"
   override val shortKey: String    = "h"
   override val description: String =

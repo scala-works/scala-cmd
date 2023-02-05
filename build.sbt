@@ -15,7 +15,7 @@ ThisBuild / developers           := List(
     id = "alterationx10",
     name = "Mark Rudolph",
     email = "mark@scala.works",
-    url = url("https://alterationx10.com/"),
+    url = url("https://alterationx10.com/")
   ),
 )
 
@@ -24,6 +24,9 @@ lazy val root = project
   .settings(
     name := "scala-cmd",
     fork := true,
+    libraryDependencies ++= Seq(
+      "org.scalameta" %% "munit" % "1.0.0-M7" % Test,
+    ),
     Compile / doc / scalacOptions ++= Seq(
       "-project",
       "Scala CMD",

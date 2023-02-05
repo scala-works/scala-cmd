@@ -100,7 +100,7 @@ trait Flag[F]:
     loop(args, Seq.empty)
 
   @tailrec
-  private def stripFlagAgs(
+  final private def stripFlagAgs(
       args: Array[String],
       accum: Array[String],
   ): Array[String] =
@@ -122,7 +122,9 @@ trait Flag[F]:
     else args.filterNot(a => a == _sk || a == _lk)
 
 object Flag:
+
   /** A helper method to check if the app input has unrecognized flags.
+    *
     * @param args
     * @param flags
     * @return
@@ -133,6 +135,19 @@ object Flag:
       .filter(_.startsWith("-"))
       .map(f => flagTriggers.contains(f))
       .foldLeft(true)(_ || _)
+
+  /** Strip the given flags from the given arguments.
+    *
+    * @param args
+    * @param flags
+    * @return
+    */
+  @tailrec
+  def stripFlags(args: Array[String], flags: Seq[Flag[?]]): Array[String] =
+    flags match
+      case Nil      => args
+      case h :: Nil => h.stripArgs(args)
+      case h :: t   => stripFlags(h.stripArgs(args), t)
 
 /** A helper trait that defaults parseArgument to a Unit value.
   */

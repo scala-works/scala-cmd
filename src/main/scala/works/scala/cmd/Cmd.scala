@@ -2,7 +2,7 @@ package works.scala.cmd
 
 /** A trait to extend for your CLI app
   */
-trait CLI:
+trait Cmd:
 
   /** The Flags to parse for this app. [[HelpFlag]] will be automatically added.
     * @return
@@ -20,6 +20,7 @@ trait CLI:
     * @param args
     */
   def command(args: Array[String]): Unit
+
 
   /** Helper method to print expected Flag/Args
     */

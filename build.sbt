@@ -19,11 +19,12 @@ ThisBuild / developers           := List(
   ),
 )
 
-lazy val root = project
+lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  .withoutSuffixFor(JVMPlatform)
+  .crossType(CrossType.Pure)
   .in(file("."))
   .settings(
     name := "scala-cmd",
-    fork := true,
     libraryDependencies ++= Seq(
       "org.scalameta" %% "munit" % "1.0.0-M7" % Test,
     ),
@@ -43,4 +44,7 @@ lazy val root = project
       "-doc-root-content",
       "README.md",
     ),
+  )
+  .jvmSettings(
+    fork := true,
   )

@@ -1,7 +1,7 @@
 name: PR Test
 on:
   pull_request:
-    types: [ opened, reopened, synchronize ]
+    types: [opened, reopened, synchronize]
     branches:
       - main
 jobs:
@@ -13,8 +13,12 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '8'
-          cache: 'sbt'
-      - name: Test
-        run: sbt test
+          distribution: "temurin"
+          java-version: "8"
+          cache: "sbt"
+      - name: Test JVM
+        run: sbt root/test
+      - name: Test JS
+        run: sbt rootJS/test
+      - name: Test Native
+        run: sbt rootNative/test

@@ -15,17 +15,18 @@ ThisBuild / developers           := List(
     id = "alterationx10",
     name = "Mark Rudolph",
     email = "mark@scala.works",
-    url = url("https://alterationx10.com/")
+    url = url("https://alterationx10.com/"),
   ),
 )
 
-lazy val root = project
+lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  .withoutSuffixFor(JVMPlatform)
+  .crossType(CrossType.Full)
   .in(file("."))
   .settings(
     name := "scala-cmd",
-    fork := true,
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % "1.0.0-M7" % Test,
+      "org.scalameta" %%% "munit" % "1.0.0-M7" % Test,
     ),
     Compile / doc / scalacOptions ++= Seq(
       "-project",
@@ -43,4 +44,7 @@ lazy val root = project
       "-doc-root-content",
       "README.md",
     ),
+  )
+  .jvmSettings(
+    fork := true,
   )

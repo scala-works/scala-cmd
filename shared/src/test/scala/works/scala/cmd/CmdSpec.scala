@@ -8,7 +8,8 @@ class CmdSpec extends FunSuite:
     object TestApp extends Cmd:
       override def command(args: Array[String]): Unit = ()
     TestApp.main(Array.empty[String])
+    assert(true)
   }
 
-  // TODO need to test default of -h, and unknown args, 
+  // TODO need to test default of -h, and unknown args,
   // but need to trap the exit code, or re-work main method

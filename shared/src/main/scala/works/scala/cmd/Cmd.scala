@@ -1,10 +1,13 @@
 package works.scala.cmd
 
+import scala.compiletime.*
+
 /** A trait to extend for your CLI app
   */
-trait Cmd:
+trait Cmd extends PlatformSpecificEntry:
+  override lazy val cmd: Cmd = this
 
-  /** The Flags to parse for this app. [[HelpFlag]] will be automatically added.
+  /** The Flags to parse for this app.
     * @return
     */
   def flags: Seq[Flag[?]] = Seq.empty
@@ -14,17 +17,15 @@ trait Cmd:
     */
   def args: Seq[Arg[?]] = Seq.empty
 
-  private val _flags = HelpFlag +: flags
-
   /** The main logic of your app
     * @param args
     */
   def command(args: Array[String]): Unit
 
-
   /** Helper method to print expected Flag/Args
     */
-  final private def printHelp(): Unit =
+  final def printHelp(): Unit =
+    val _flags = HelpFlag +: flags
     if args.nonEmpty then
       println("Args:")
       println(
@@ -46,15 +47,3 @@ trait Cmd:
         }
         .mkString,
     )
-
-  final def main(args: Array[String]): Unit =
-    if HelpFlag.isPresent(args) then
-      printHelp()
-      sys.exit(0)
-
-    if Flag.hasUnrecognizedFlag(args, _flags) then
-      println("An unrecognized flag was passed.")
-      printHelp()
-      sys.exit(1)
-
-    command(args)

@@ -26,7 +26,8 @@ lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(
     name := "scala-cmd",
     libraryDependencies ++= Seq(
-      "org.scalameta" %%% "munit" % "1.0.0-M7" % Test,
+      "org.typelevel" %%% "cats-effect" % "3.4.6",
+      "org.scalameta" %%% "munit"       % "1.0.0-M7" % Test,
     ),
     Compile / doc / scalacOptions ++= Seq(
       "-project",

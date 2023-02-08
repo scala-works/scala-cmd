@@ -60,7 +60,7 @@ trait Flag[F]:
     * @return
     *   true if present, otherwise false
     */
-  final def isPresent(args: Array[String]): Boolean =
+  final def isPresent(args: List[String]): Boolean =
     args.exists(a => a == _sk || a == _lk)
 
   /** A method that will find the first instance of an argument triggering this
@@ -75,7 +75,7 @@ trait Flag[F]:
     * @see
     *   [[parseArgument]]
     */
-  final def parseFirstFlagArg(args: Array[String]): Option[F] =
+  final def parseFirstFlagArg(args: List[String]): Option[F] =
     args
       .dropWhile(a => !(a == _sk || a == _lk))
       .drop(1)
@@ -88,9 +88,9 @@ trait Flag[F]:
     * @param args
     *   The arguments passed to the command
     */
-  final def parseFlagArgs(args: Array[String]): Seq[F] =
+  final def parseFlagArgs(args: List[String]): Seq[F] =
     @tailrec
-    def loop(a: Array[String], accum: Seq[F]): Seq[F] =
+    def loop(a: List[String], accum: Seq[F]): Seq[F] =
       a.toList match
         case Nil                                  => accum
         case f :: Nil                             => accum
@@ -101,9 +101,9 @@ trait Flag[F]:
 
   @tailrec
   final private def stripFlagArgs(
-      args: Array[String],
-      accum: Array[String],
-  ): Array[String] =
+      args: List[String],
+      accum: List[String],
+  ): List[String] =
     args.toList match
       case Nil                            =>
         accum
@@ -120,8 +120,8 @@ trait Flag[F]:
     * @param accum
     * @return
     */
-  final def stripArgs(args: Array[String]): Array[String] =
-    if hasArgument then stripFlagArgs(args, Array.empty)
+  final def stripArgs(args: List[String]): List[String] =
+    if hasArgument then stripFlagArgs(args, List.empty)
     else args.filterNot(a => a == _sk || a == _lk)
 
 object Flag:
@@ -132,7 +132,7 @@ object Flag:
     * @param flags
     * @return
     */
-  def hasUnrecognizedFlag(args: Array[String], flags: Seq[Flag[?]]): Boolean =
+  def hasUnrecognizedFlag(args: List[String], flags: Seq[Flag[?]]): Boolean =
     val flagTriggers: Seq[String] = flags.flatMap(f => Seq(f._sk, f._lk))
     args
       .filter(_.startsWith("-"))
@@ -145,7 +145,7 @@ object Flag:
     * @return
     */
   @tailrec
-  def stripFlags(args: Array[String], flags: Seq[Flag[?]]): Array[String] =
+  def stripFlags(args: List[String], flags: Seq[Flag[?]]): List[String] =
     flags match
       case Nil      => args
       case h :: Nil => h.stripArgs(args)

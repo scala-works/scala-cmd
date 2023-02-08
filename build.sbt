@@ -1,16 +1,16 @@
 ThisBuild / scalaVersion := "3.2.2"
 
-ThisBuild / organization         := "works.scala"
-ThisBuild / organizationName     := "Scala Works"
-ThisBuild / organizationHomepage := Some(url("https://scala.works"))
-ThisBuild / homepage             := Some(url("https://github.com/scala-works/scala-cmd"))
-ThisBuild / description          := "A slim CLI framework for Scala 3 apps"
-ThisBuild / licenses             := List(
+ThisBuild / organization           := "works.scala"
+ThisBuild / organizationName       := "Scala Works"
+ThisBuild / organizationHomepage   := Some(url("https://scala.works"))
+ThisBuild / homepage               := Some(url("https://github.com/scala-works/scala-cmd"))
+ThisBuild / description            := "A slim CLI framework for Scala 3 apps"
+ThisBuild / licenses               := List(
   "Apache 2" -> new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"),
 )
-sonatypeCredentialHost           := "s01.oss.sonatype.org"
-sonatypeRepository               := "https://s01.oss.sonatype.org/service/local"
-ThisBuild / developers           := List(
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local"
+ThisBuild / developers             := List(
   Developer(
     id = "alterationx10",
     name = "Mark Rudolph",

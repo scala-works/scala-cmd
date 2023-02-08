@@ -21,6 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  if: ${{ github.repository_owner == 'scala-works' }}
   # Single deploy job since we're just deploying
   deploy:
     environment:

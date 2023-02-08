@@ -4,6 +4,7 @@ on:
     branches: [master, main]
     tags: ["*"]
 jobs:
+  if: ${{ github.repository_owner == 'scala-works' }}
   publish:
     runs-on: ubuntu-20.04
     steps:

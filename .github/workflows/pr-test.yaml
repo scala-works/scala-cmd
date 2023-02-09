@@ -6,6 +6,7 @@ on:
       - main
 jobs:
   test:
+    if: github.repository == 'scala-works/scala-cmd'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

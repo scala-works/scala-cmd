@@ -2,15 +2,30 @@ package works.scala.cmd
 
 import cats.effect.{ ExitCode, IO, IOApp }
 import cats.syntax.all.*
+import Errors.EarlyExitException
 
 /** A command to run as part of a CLI app.
   */
 trait Cmd:
 
+  /** The name of the command. Used to run if part of a MultiCmdApp
+    */
+  val name: String
+
+  /** A short description of what this command does.
+    */
+  val description: String
+
   /** The Flags to parse for this app.
     * @return
     */
   def flags: Seq[Flag[?]] = Seq.empty
+
+  /** A collection of built-in flags provided for pre-processing
+    */
+  private val builtIns: Seq[Flag[?]] = Seq(
+    HelpFlag,
+  )
 
   /** The Args to parse for this app.
     * @return
@@ -22,10 +37,11 @@ trait Cmd:
     */
   def command(args: List[String]): Unit
 
-  /** Helper method to print expected Flag/Args
+  /** Helper to print expected Flag/Args
     */
-  val helpString: String =
+  final private lazy val helpString: String =
     val sb     = new java.lang.StringBuilder()
+    sb.append(s"Command: ${ name } : ${ description }" + System.lineSeparator())
     val _flags = HelpFlag +: flags
     if args.nonEmpty then
       sb.append("Args:" + System.lineSeparator())
@@ -46,16 +62,7 @@ trait Cmd:
       }
     sb.toString()
 
-/** A trait for your single-command CLI to extend.
-  */
-trait CmdApp extends Cmd with IOApp:
-  final private case class EarlyExitException(code: ExitCode) extends Throwable
-
-  private val builtIns: Seq[Flag[?]] = Seq(
-    HelpFlag,
-  )
-
-  def checkHelp(args: List[String]): IO[Unit] = IO {
+  final private def checkHelp(args: List[String]): IO[Unit] = IO {
     HelpFlag.isPresent(args)
   }.ifM(
     ifTrue = IO.println(helpString) *> IO.raiseError(
@@ -64,7 +71,7 @@ trait CmdApp extends Cmd with IOApp:
     ifFalse = IO.unit,
   )
 
-  def checkUnrecognized(args: List[String]): IO[Unit] = IO {
+  final private def checkUnrecognized(args: List[String]): IO[Unit] = IO {
     Flag.hasUnrecognizedFlag(args, builtIns ++ flags)
   }.ifM(
     ifTrue = IO.println("An unrecognized flag was passed") *> IO.println(
@@ -73,7 +80,7 @@ trait CmdApp extends Cmd with IOApp:
     ifFalse = IO.unit,
   )
 
-  override def run(args: List[String]): IO[ExitCode] =
+  final def io(args: List[String]): IO[ExitCode] =
     (
       for
         _ <- checkHelp(args)
